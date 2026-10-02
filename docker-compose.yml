@@ -1,0 +1,44 @@
+services:
+
+  frontend:
+    image: microservices-frontend:1.0
+    container_name: microservices-frontend
+    ports:
+      - "8081:80"
+    environment:
+      FRONTEND_ENV: production
+      BACKEND_URL: http://backend:8080
+    depends_on:
+      - backend
+
+  backend:
+    image: microservices-backend:1.0
+    container_name: microservices-backend
+    ports:
+      - "8080:8080"
+    environment:
+      APP_ENV: production
+      PORT: "8080"
+      DB_HOST: database
+      DB_PORT: "5432"
+      DB_NAME: microservices
+      DB_USER: snehal
+    depends_on:
+      - database
+
+  database:
+    image: microservices-database:1.0
+    container_name: microservices-database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: microservices
+      POSTGRES_USER: snehal
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+
